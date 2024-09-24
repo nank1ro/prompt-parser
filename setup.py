@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="prompt_parser",
-    version="0.1.0",
+    version="0.1.1",
     author="Alexandru Mariuti",
     author_email="alex@mariuti.com",
     description="A simple Python library for parsing LLM prompts.",

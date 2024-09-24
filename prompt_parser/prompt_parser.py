@@ -1,30 +1,23 @@
 import re
 import json
 from typing import Any
-from json_model import JSONModel
+from pydantic import BaseModel
 
 
-class PromptAttributes(JSONModel):
+class PromptAttributes(BaseModel, extra="allow"):
+    temperature: float | None = None  # eg 0.5
+    top_p: float | None = None  # eg 0.5
+    top_k: int | None = None  # eg 50
+    provider: str | None = None  # eg openai
+    endpoint: str | None = None  # eg chat
+    model: str | None = None  # eg gpt-4
+    max_tokens: int | None = None  # eg 4096
+
     def __init__(
         self,
-        temperature: float | None = None,  # eg 0.5
-        top_p: float | None = None,  # eg 0.5
-        top_k: int | None = None,  # eg 50
-        provider: str | None = None,  # eg openai
-        endpoint: str | None = None,  # eg chat
-        model: str | None = None,  # eg gpt-4
-        max_tokens: int | None = None,  # eg 4096
         **kwargs: Any,
     ):
-        self.temperature = temperature
-        self.top_p = top_p
-        self.top_k = top_k
-        self.provider = provider
-        self.model = model
-        self.max_tokens = max_tokens
-        self.endpoint = endpoint
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+        super().__init__(**kwargs)
 
     def __getitem__(self, item: str) -> Any:
         return getattr(self, item)
@@ -65,18 +58,11 @@ class PromptAttributes(JSONModel):
         return self.endpoint
 
 
-class Prompt(JSONModel):
-    def __init__(
-        self,
-        attributes: PromptAttributes,
-        system: str | None = None,
-        user: str | None = None,
-        assistant: str | None = None,
-    ):
-        self.attributes = attributes
-        self.system = system
-        self.user = user
-        self.assistant = assistant
+class Prompt(BaseModel):
+    attributes: PromptAttributes
+    system: str | None = None
+    user: str | None = None
+    assistant: str | None = None
 
     def format_system(self, *args: object, **kwargs: object) -> str:
         assert self.system is not None, "System prompt is required"
@@ -177,8 +163,9 @@ class Prompt(JSONModel):
                     # fallback to string
                     parsed_value = f"{value}"
 
-                result[f"{key}"] = parsed_value
+                result[f"{key.strip()}"] = parsed_value
 
+            print("result", result)
             return PromptAttributes(**result)
         return PromptAttributes()
 

@@ -1,8 +1,11 @@
 from setuptools import setup, find_packages
 
+with open("requirements.txt") as f:
+    requirements = f.read().splitlines()
+
 setup(
     name="prompt_parser",
-    version="0.1.1",
+    version="0.1.2",
     author="Alexandru Mariuti",
     author_email="alex@mariuti.com",
     description="A simple Python library for parsing LLM prompts.",
@@ -15,4 +18,5 @@ setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.6",
+    install_requires=requirements,
 )

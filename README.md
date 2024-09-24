@@ -1,5 +1,8 @@
 # Prompt Parser
 
+![PyPI](https://img.shields.io/pypi/v/prompt-parser?label=pypi%20package)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/prompt-parser)
+
 A simple Python library for parsing LLM prompts.
 
 ## Usage
@@ -25,7 +28,7 @@ print(prompt.assistant) # Hi from assistant
 print(prompt.format_user(custom="Alex")) # "Hi from user Alex"
 ```
 
-This is the output of the given prompt:
+This is the output of the given prompt file called `example.prompt`:
 ```
 ---
 temperature: 0.5

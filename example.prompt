@@ -1,0 +1,23 @@
+---
+temperature: 0.5
+top_p: 0.5
+top_k: 50
+max_tokens: 4096
+provider: openai
+model: gpt-4
+endpoint: chat
+unknown: blablah
+---
+
+<system>
+Hi from system
+</system>
+
+<user>
+Hi from user {custom}
+</user>
+
+<assistant>
+Hi from assistant
+</assistant>
+

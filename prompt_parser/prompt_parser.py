@@ -165,7 +165,6 @@ class Prompt(BaseModel):
 
                 result[f"{key.strip()}"] = parsed_value
 
-            print("result", result)
             return PromptAttributes(**result)
         return PromptAttributes()
 

@@ -8,28 +8,9 @@ A simple Python library for parsing LLM prompts.
 ## Usage
 
 ```python
-
 from prompt_parser import Prompt
 
-prompt = Prompt.parse_from_file("PROMPT_FILE_PATH")
-
-# access the attributes
-print(prompt.attributes.temperature) # 0.5
-print(prompt.attributes.top_p)  # 0.5
-print(prompt.attributes.top_k) # 50
-print(prompt.attributes.provider) # openai
-print(prompt.attributes.model) # gpt-4
-print(prompt.attributes.endpoint) # chat
-print(prompt.attributes.max_tokens) # 4096
-print(prompt.attributes["unknown"]) # blahblah
-print(prompt.system) # Hi from system
-print(prompt.user) # Hi from user {custom}
-print(prompt.assistant) # Hi from assistant
-print(prompt.format_user(custom="Alex")) # "Hi from user Alex"
-```
-
-This is the output of the given prompt file called `example.prompt`:
-```
+prompt = Prompt.parse("""
 ---
 temperature: 0.5
 top_p: 0.5
@@ -52,7 +33,34 @@ Hi from user {custom}
 <assistant>
 Hi from assistant
 </assistant>
+""")
+
+
+# getters
+prompt.system  # Hi from system
+# or
+prompt.system_forced  # "Hi from system" -> will throw an error if not present
+
+prompt.user  # Hi from user {custom}
+# or
+prompt.user_forced  # "Hi from user {custom}" -> will throw an error if not present
+
+prompt.assistant  # Hi from assistant
+# or
+prompt.assistant_forced  # "Hi from assistant" -> will throw an error if not present
+
+prompt.format_user(custom="Alex")  # "Hi from user Alex"
+# check also `format_system` and `format_assistant`
+
+# access the attributes
+prompt.attributes.temperature  # 0.5
+prompt.attributes.top_p  # 0.5
+prompt.attributes.top_k  # 50
+prompt.attributes.provider  # openai
+prompt.attributes.model  # gpt-4
+prompt.attributes.endpoint  # chat
+prompt.attributes.max_tokens  # 4096
+prompt.attributes["unknown"]  # blahblah
 ```
 
-If you don't have a prompt file, you can use the `Prompt.parse` method to parse a string.
-
+You can also use the `Prompt.parse_from_file(path)` method to parse a prompt file given its path.

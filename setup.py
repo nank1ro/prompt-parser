@@ -3,14 +3,18 @@ from setuptools import setup, find_packages
 with open("requirements.txt") as f:
     requirements = f.read().splitlines()
 
+with open("VERSION") as version_file:
+    version = version_file.read().strip()
+
 setup(
     name="prompt_parser",
-    version="0.1.2",
+    version=version,
     author="Alexandru Mariuti",
     author_email="alex@mariuti.com",
     description="A simple Python library for parsing LLM prompts.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
+    url="https://github.com/nank1ro/prompt-parser",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

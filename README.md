@@ -1,7 +1,9 @@
 # Prompt Parser
 
-![PyPI](https://img.shields.io/pypi/v/prompt-parser?label=pypi%20package)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/prompt-parser)
+[![GitHub LICENSE](https://img.shields.io/github/license/nank1ro/prompt-parser)](https://github.com/nank1ro/prompt-parser/blob/main/LICENSE)
+[![Mounthly Download](https://img.shields.io/pypi/dm/prompt-parser)](https://pypistats.org/packages/prompt-parser)
+[![latest version](https://img.shields.io/pypi/v/prompt-parser.svg?style=flat)](https://pypi.org/project/prompt-parser/)
+[![supported python version](https://img.shields.io/pypi/pyversions/prompt-parser)](https://pypi.org/project/prompt-parser)
 
 A simple Python library for parsing LLM prompts.
 

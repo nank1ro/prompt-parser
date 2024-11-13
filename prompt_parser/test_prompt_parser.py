@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from prompt_parser import Prompt
+from prompt_parser import Prompt, PromptAttributes
 
 
 class TestPromptParser(unittest.TestCase):
@@ -20,6 +20,77 @@ class TestPromptParser(unittest.TestCase):
         self.assertEqual(prompt.assistant, "Hi from assistant")
         formatted_user = prompt.format_user(custom="ciao")
         self.assertEqual(formatted_user, "Hi from user ciao")
+        self.assertEqual(
+            prompt.attributes.tools,
+            {
+                "name": "get_weather",
+                "description": "Fetches the weather in the given location",
+                "strict": True,
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "location": {
+                            "type": "string",
+                            "description": "The location to get the weather for",
+                        },
+                        "unit": {
+                            "type": ["string", "null"],
+                            "description": "The unit to return the temperature in",
+                            "enum": ["F", "C"],
+                        },
+                    },
+                    "additionalProperties": False,
+                    "required": ["location", "unit"],
+                },
+            },
+        )
+
+    def test_string_representation(self):
+        prompt = Prompt(
+            attributes=PromptAttributes(
+                temperature=0.5,
+                top_p=0.5,
+                top_k=50,
+                provider="openai",
+                model="gpt-4",
+                max_tokens=4096,
+                unknown="blablah",
+            ),
+            system="Hi from system",
+            user="Hi from user {custom}",
+            assistant="Hi from assistant",
+        )
+        print(str(prompt))
+        self.assertEqual(
+            str(prompt),
+            """---
+temperature: 0.5
+top_p: 0.5
+top_k: 50
+provider: openai
+model: gpt-4
+max_tokens: 4096
+unknown: blablah
+---
+
+<system>
+Hi from system
+</system>
+
+<assistant>
+Hi from assistant
+</assistant>
+
+<user>
+Hi from user {custom}
+</user>
+""",
+        )
+
+    def test_format_tools(self):
+        prompt = Prompt(attributes=PromptAttributes(tools={"name": r"{function_name}"}))
+        formatted_tools = prompt.attributes.format_tools(function_name="get_weather")
+        self.assertEqual(formatted_tools, '{"name": "get_weather"}')
 
 
 if __name__ == "__main__":

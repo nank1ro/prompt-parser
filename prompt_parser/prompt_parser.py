@@ -78,8 +78,8 @@ class PromptAttributes(BaseModel, extra="allow"):
         self,
         # Whether to partially format the prompt without throwing if some templates are missing, defaults to true.
         format_partial: bool = True,
-        # Whether to store the formatted variable, defaults to `True`.
-        store_state: bool = True,
+        # Whether to store the formatted variable, defaults to `False`.
+        store_state: bool = False,
         *args: object,
         **kwargs: object,
     ) -> str:
@@ -110,8 +110,8 @@ class Prompt(BaseModel):
         self,
         # Whether to partially format the prompt without throwing if some templates are missing, defaults to true.
         format_partial: bool = True,
-        # Whether to store the formatted variable, defaults to `True`.
-        store_state: bool = True,
+        # Whether to store the formatted variable, defaults to `False`.
+        store_state: bool = False,
         *args: object,
         **kwargs: object,
     ) -> str:
@@ -133,8 +133,8 @@ class Prompt(BaseModel):
         self,
         # Whether to partially format the prompt without throwing if some templates are missing, defaults to true.
         format_partial: bool = True,
-        # Whether to store the formatted variable, defaults to `True`.
-        store_state: bool = True,
+        # Whether to store the formatted variable, defaults to `False`.
+        store_state: bool = False,
         *args: object,
         **kwargs: object,
     ) -> str:
@@ -156,8 +156,8 @@ class Prompt(BaseModel):
         self,
         # Whether to partially format the prompt without throwing if some templates are missing, defaults to true.
         format_partial: bool = True,
-        # Whether to store the formatted variable, defaults to `True`.
-        store_state: bool = True,
+        # Whether to store the formatted variable, defaults to `False`.
+        store_state: bool = False,
         *args: object,
         **kwargs: object,
     ) -> str:

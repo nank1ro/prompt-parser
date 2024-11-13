@@ -90,7 +90,6 @@ Hi from user {custom}
     def test_format_tools(self):
         prompt = Prompt(attributes=PromptAttributes(tools={"name": r"{function_name}"}))
         formatted_tools = prompt.attributes.format_tools(function_name="get_weather")
-        self.assertEqual(prompt.attributes.tools, {"name": "get_weather"})
         self.assertEqual(formatted_tools, '{"name": "get_weather"}')
 
 

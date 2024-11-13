@@ -21,6 +21,29 @@ max_tokens: 4096
 provider: openai
 model: gpt-4
 endpoint: chat
+tools: {
+    "name": "get_weather",
+    "description": "Fetches the weather in the given location",
+    "strict": true,
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "location": {
+                "type": "string",
+                "description": "The location to get the weather for"
+            },
+            "unit": {
+                "type": ["string", "null"],
+                "description": "The unit to return the temperature in",
+                "enum": ["F", "C"]
+            }
+        },
+        "additionalProperties": false,
+        "required": [
+            "location", "unit"
+        ]
+    }
+}
 unknown: blablah
 ---
 
@@ -66,3 +89,12 @@ prompt.attributes["unknown"]  # blahblah
 ```
 
 You can also use the `Prompt.parse_from_file(path)` method to parse a prompt file given its path.
+
+### You can convert back a prompt to a string
+```python
+print(str(prompt))
+
+# or store it in a file
+with open("task.prompt", "w") as f:
+  f.write(str(prompt))
+```

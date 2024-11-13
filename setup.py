@@ -23,4 +23,8 @@ setup(
     ],
     python_requires=">=3.6",
     install_requires=requirements,
+    project_urls={
+        "GitHub": "https://github.com/nank1ro/prompt-parser",
+        "Changelog": "https://github.com/nank1ro/prompt-parser/blob/main/CHANGELOG.md",
+    },
 )

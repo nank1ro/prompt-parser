@@ -1,7 +1,17 @@
 import re
-import json
-from typing import Any
+from typing import Any, Dict
 from pydantic import BaseModel
+import yaml
+import json
+
+
+def partial_format(template, **kwargs):
+    def replace(match):
+        key = match.group(1)
+        return str(kwargs.get(key, match.group(0)))
+
+    pattern = r"\{(\w+)\}"
+    return re.sub(pattern, replace, template)
 
 
 class PromptAttributes(BaseModel, extra="allow"):
@@ -12,12 +22,14 @@ class PromptAttributes(BaseModel, extra="allow"):
     endpoint: str | None = None  # eg chat
     model: str | None = None  # eg gpt-4
     max_tokens: int | None = None  # eg 4096
+    tools: Dict[str, Any] | None = None
 
     def __init__(
         self,
         **kwargs: Any,
     ):
         super().__init__(**kwargs)
+        self.__dict__.update(kwargs)
 
     def __getitem__(self, item: str) -> Any:
         return getattr(self, item)
@@ -57,6 +69,36 @@ class PromptAttributes(BaseModel, extra="allow"):
         assert self.endpoint is not None, "Endpoint is required"
         return self.endpoint
 
+    @property
+    def tools_forced(self) -> Dict[str, Any]:
+        assert self.tools is not None, "Tools is required"
+        return self.tools
+
+    def format_tools(
+        self,
+        # Whether to partially format the prompt without throwing if some templates are missing, defaults to true.
+        format_partial: bool = True,
+        # Whether to store the formatted variable, defaults to `True`.
+        store_state: bool = True,
+        *args: object,
+        **kwargs: object,
+    ) -> str:
+        assert self.tools is not None, "Tools is required"
+
+        tools_str = json.dumps(self.tools)
+
+        s: str
+        # Format the string partially, without being forced to provide all the parameters
+        if format_partial:
+            s = partial_format(tools_str, *args, **kwargs)
+        else:
+            s = tools_str.format(*args, **kwargs)
+
+        if store_state:
+            self.tools = json.loads(s)
+
+        return s
+
 
 class Prompt(BaseModel):
     attributes: PromptAttributes
@@ -64,17 +106,101 @@ class Prompt(BaseModel):
     user: str | None = None
     assistant: str | None = None
 
-    def format_system(self, *args: object, **kwargs: object) -> str:
+    def format_system(
+        self,
+        # Whether to partially format the prompt without throwing if some templates are missing, defaults to true.
+        format_partial: bool = True,
+        # Whether to store the formatted variable, defaults to `True`.
+        store_state: bool = True,
+        *args: object,
+        **kwargs: object,
+    ) -> str:
         assert self.system is not None, "System prompt is required"
-        return self.system.format(*args, **kwargs)
 
-    def format_user(self, *args: object, **kwargs: object) -> str:
+        s: str
+        # Format the string partially, without being forced to provide all the parameters
+        if format_partial:
+            s = partial_format(self.system, *args, **kwargs)
+        else:
+            s = self.system.format(*args, **kwargs)
+
+        if store_state:
+            self.system = s
+
+        return s
+
+    def format_user(
+        self,
+        # Whether to partially format the prompt without throwing if some templates are missing, defaults to true.
+        format_partial: bool = True,
+        # Whether to store the formatted variable, defaults to `True`.
+        store_state: bool = True,
+        *args: object,
+        **kwargs: object,
+    ) -> str:
         assert self.user is not None, "User prompt is required"
-        return self.user.format(*args, **kwargs)
 
-    def format_assistant(self, *args: object, **kwargs: object) -> str:
+        s: str
+        # Format the string partially, without being forced to provide all the parameters
+        if format_partial:
+            s = partial_format(self.user, *args, **kwargs)
+        else:
+            s = self.user.format(*args, **kwargs)
+
+        if store_state:
+            self.user = s
+
+        return s
+
+    def format_assistant(
+        self,
+        # Whether to partially format the prompt without throwing if some templates are missing, defaults to true.
+        format_partial: bool = True,
+        # Whether to store the formatted variable, defaults to `True`.
+        store_state: bool = True,
+        *args: object,
+        **kwargs: object,
+    ) -> str:
         assert self.assistant is not None, "Assistant prompt is required"
-        return self.assistant.format(*args, **kwargs)
+
+        s: str
+        # Format the string partially, without being forced to provide all the parameters
+        if format_partial:
+            s = partial_format(self.assistant, *args, **kwargs)
+        else:
+            s = self.assistant.format(*args, **kwargs)
+
+        if store_state:
+            self.assistant = s
+
+        return s
+
+        # if not self.attributes.tools:
+        #     return None
+        #
+        # def recursive_format(entry, *args, **kwargs):
+        #     """Recursively format strings in a nested structure."""
+        #     if isinstance(entry, dict):
+        #         for key, value in entry.items():
+        #             entry[key] = recursive_format(value, *args, **kwargs)
+        #         return entry
+        #     elif isinstance(entry, list):
+        #         return [recursive_format(item, *args, **kwargs) for item in entry]
+        #     elif isinstance(entry, str):
+        #         if kwargs.get("partial_format", False):
+        #             processed_value = partial_format(entry, *args, **kwargs)
+        #         else:
+        #             processed_value = entry.format(*args, **kwargs)
+        #         if processed_value != entry:
+        #             processed_dict = ast.literal_eval(processed_value)
+        #             return processed_dict
+        #         else:
+        #             return entry
+        #     else:
+        #         return entry
+        #
+        # self.attributes.tools = recursive_format(self.attributes.tools, *args, **kwargs)
+        # return self.attributes.tools
 
     @staticmethod
     def parse_from_file(path: str) -> "Prompt":
@@ -150,22 +276,9 @@ class Prompt(BaseModel):
     def __parse_frontmatter(s: str) -> PromptAttributes:
         match = re.search(r"---(.*?)---", s, re.DOTALL)
         if match:
-            frontmatter = match.group(1).strip()
-            frontmatter_lines = frontmatter.split("\n")
-            result = {}
-            for line in frontmatter_lines:
-                key, value = line.split(":", 1)
-                value = value.lstrip(" ")
-                try:
-                    # try parsing the value as a JSON object
-                    parsed_value = json.loads(value)
-                except json.decoder.JSONDecodeError:
-                    # fallback to string
-                    parsed_value = f"{value}"
-
-                result[f"{key.strip()}"] = parsed_value
-
-            return PromptAttributes(**result)
+            frontmatter_raw = match.group(1).strip()
+            frontmatter = yaml.safe_load(frontmatter_raw)
+            return PromptAttributes(**frontmatter)
         return PromptAttributes()
 
     @staticmethod
@@ -193,3 +306,42 @@ class Prompt(BaseModel):
     def assistant_forced(self) -> str:
         assert self.assistant is not None, "Assistant prompt is required"
         return self.assistant
+
+    def __str__(self) -> str:
+        # Write frontmatter
+        s = "---\n"
+
+        for attr in self.attributes.__dict__:
+            print("attr", attr)
+            # ignore None attributes
+            attr_value = getattr(self.attributes, attr)
+            if attr_value is None:
+                continue
+
+            if attr == "tools":
+                s += "tools: "
+                s += json.dumps(self.attributes.tools, indent=2)
+                s += "\n"
+            else:
+                s += f"{attr}: {getattr(self.attributes, attr)}\n"
+        s += "---\n\n"
+
+        # Write system prompt
+        if self.system:
+            s += "<system>\n"
+            s += self.system.strip() + "\n"
+            s += "</system>\n\n"
+
+        # Write assistant prompt
+        if self.assistant:
+            s += "<assistant>\n"
+            s += self.assistant.strip() + "\n"
+            s += "</assistant>\n\n"
+
+        # Write user prompt
+        if self.user:
+            s += "<user>\n"
+            s += self.user.strip() + "\n"
+            s += "</user>\n"
+
+        return s

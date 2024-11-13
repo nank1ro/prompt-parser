@@ -175,33 +175,6 @@ class Prompt(BaseModel):
 
         return s
 
-        # if not self.attributes.tools:
-        #     return None
-        #
-        # def recursive_format(entry, *args, **kwargs):
-        #     """Recursively format strings in a nested structure."""
-        #     if isinstance(entry, dict):
-        #         for key, value in entry.items():
-        #             entry[key] = recursive_format(value, *args, **kwargs)
-        #         return entry
-        #     elif isinstance(entry, list):
-        #         return [recursive_format(item, *args, **kwargs) for item in entry]
-        #     elif isinstance(entry, str):
-        #         if kwargs.get("partial_format", False):
-        #             processed_value = partial_format(entry, *args, **kwargs)
-        #         else:
-        #             processed_value = entry.format(*args, **kwargs)
-        #         if processed_value != entry:
-        #             processed_dict = ast.literal_eval(processed_value)
-        #             return processed_dict
-        #         else:
-        #             return entry
-        #     else:
-        #         return entry
-        #
-        # self.attributes.tools = recursive_format(self.attributes.tools, *args, **kwargs)
-        # return self.attributes.tools
-
     @staticmethod
     def parse_from_file(path: str) -> "Prompt":
         """

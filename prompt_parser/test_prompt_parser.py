@@ -45,9 +45,6 @@ class TestPromptParser(unittest.TestCase):
             },
         )
 
-        with open("test.prompt", "w") as f:
-            f.write(str(prompt))
-
     def test_string_representation(self):
         prompt = Prompt(
             attributes=PromptAttributes(

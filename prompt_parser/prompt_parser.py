@@ -285,7 +285,6 @@ class Prompt(BaseModel):
         s = "---\n"
 
         for attr in self.attributes.__dict__:
-            print("attr", attr)
             # ignore None attributes
             attr_value = getattr(self.attributes, attr)
             if attr_value is None:

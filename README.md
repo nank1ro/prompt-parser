@@ -21,7 +21,7 @@ max_tokens: 4096
 provider: openai
 model: gpt-4
 endpoint: chat
-tools: {
+tools: [{
     "name": "get_weather",
     "description": "Fetches the weather in the given location",
     "strict": true,
@@ -43,7 +43,7 @@ tools: {
             "location", "unit"
         ]
     }
-}
+}]
 unknown: blablah
 ---
 

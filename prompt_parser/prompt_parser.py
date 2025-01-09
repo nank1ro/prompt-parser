@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict
+from typing import Any, Dict, List
 from pydantic import BaseModel
 import yaml
 import json
@@ -22,7 +22,7 @@ class PromptAttributes(BaseModel, extra="allow"):
     endpoint: str | None = None  # eg chat
     model: str | None = None  # eg gpt-4
     max_tokens: int | None = None  # eg 4096
-    tools: Dict[str, Any] | None = None
+    tools: List[Dict[str, Any]] | None = None
 
     def __init__(
         self,
@@ -70,7 +70,7 @@ class PromptAttributes(BaseModel, extra="allow"):
         return self.endpoint
 
     @property
-    def tools_forced(self) -> Dict[str, Any]:
+    def tools_forced(self) -> List[Dict[str, Any]]:
         assert self.tools is not None, "Tools is required"
         return self.tools
 

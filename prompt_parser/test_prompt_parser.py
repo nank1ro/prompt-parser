@@ -22,27 +22,29 @@ class TestPromptParser(unittest.TestCase):
         self.assertEqual(formatted_user, "Hi from user ciao")
         self.assertEqual(
             prompt.attributes.tools,
-            {
-                "name": "get_weather",
-                "description": "Fetches the weather in the given location",
-                "strict": True,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "location": {
-                            "type": "string",
-                            "description": "The location to get the weather for",
+            [
+                {
+                    "name": "get_weather",
+                    "description": "Fetches the weather in the given location",
+                    "strict": True,
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "location": {
+                                "type": "string",
+                                "description": "The location to get the weather for",
+                            },
+                            "unit": {
+                                "type": ["string", "null"],
+                                "description": "The unit to return the temperature in",
+                                "enum": ["F", "C"],
+                            },
                         },
-                        "unit": {
-                            "type": ["string", "null"],
-                            "description": "The unit to return the temperature in",
-                            "enum": ["F", "C"],
-                        },
+                        "additionalProperties": False,
+                        "required": ["location", "unit"],
                     },
-                    "additionalProperties": False,
-                    "required": ["location", "unit"],
-                },
-            },
+                }
+            ],
         )
 
     def test_string_representation(self):
@@ -88,9 +90,11 @@ Hi from user {custom}
         )
 
     def test_format_tools(self):
-        prompt = Prompt(attributes=PromptAttributes(tools={"name": r"{function_name}"}))
+        prompt = Prompt(
+            attributes=PromptAttributes(tools=[{"name": r"{function_name}"}])
+        )
         formatted_tools = prompt.attributes.format_tools(function_name="get_weather")
-        self.assertEqual(formatted_tools, '{"name": "get_weather"}')
+        self.assertEqual(formatted_tools, '[{"name": "get_weather"}]')
 
 
 if __name__ == "__main__":

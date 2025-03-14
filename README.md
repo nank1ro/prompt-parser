@@ -32,9 +32,9 @@ pip install prompt-parser
 
 The core of prompt-parser is the `Prompt` class. You can parse a prompt string using the `Prompt.parse()` method. The prompt string should follow a specific format:
 
-YAML Frontmatter (Optional): Prompt attributes like temperature, model, top_p, etc., can be defined in YAML format between --- delimiters at the beginning of the string.
+__YAML Frontmatter (Optional)__: Prompt attributes like `temperature`, `model`, `top_p`, etc., can be defined in YAML format between `---` delimiters at the beginning of the string.
 
-Tagged Message Sections (Optional): Use <system>, <user>, and <assistant> tags to define the content for each message role.
+__Tagged Message Sections (Optional)__: Use `<system>`, `<user>`, and `<assistant>` tags to define the content for each message role.
 
 Here's an example prompt string and how to parse it:
 

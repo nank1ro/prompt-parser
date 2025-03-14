@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2
+
+- **DOCS**: Fix typo in README.
+
 ## 0.3.1
 
 - **FEAT**: Add `get` to `PromptAttributes` to safely get attributes.

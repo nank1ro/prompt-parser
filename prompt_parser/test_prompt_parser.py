@@ -96,6 +96,14 @@ Hi from user {custom}
         formatted_tools = prompt.attributes.format_tools(function_name="get_weather")
         self.assertEqual(formatted_tools, '[{"name": "get_weather"}]')
 
+    def test_not_present_attribute(self):
+        prompt = Prompt(attributes=PromptAttributes())
+        self.assertEqual(prompt.attributes.get("notpresent"), None)
+
+    def test_not_present_attribute_default_value(self):
+        prompt = Prompt(attributes=PromptAttributes())
+        self.assertEqual(prompt.attributes.get("notpresent", "default"), "default")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,6 @@
 import unittest
-from pathlib import Path
 
+from pathlib import Path
 from prompt_parser import Prompt, PromptAttributes
 
 
@@ -62,7 +62,6 @@ class TestPromptParser(unittest.TestCase):
             user="Hi from user {custom}",
             assistant="Hi from assistant",
         )
-        print(str(prompt))
         self.assertEqual(
             str(prompt),
             """---

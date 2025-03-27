@@ -30,6 +30,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install twine wheel pytest setuptools
           pip install -r requirements.txt
+      - name: Test package
+        run: python -m unittest test.test_prompt_parser
       - name: Build package
         run: |
           make clean

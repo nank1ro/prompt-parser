@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+- **REFACTOR**: Refactor the code.
+
 ## 0.3.2
 
 - **DOCS**: Fix typo in README.

@@ -396,13 +396,12 @@ class Prompt(BaseModel):
             tool_id: The unique identifier of the tool call
             response: The response content to store
             name: The name of the tool
-            store_state: Whether to modify the current instance or return a new one.
-                        If True, stores the updated tool response.
+            store_state: Whether to store the updated tool response in the instance.
                         Defaults to True.
 
         Returns:
             If store_state is False, returns a new Prompt instance with the updated tool response.
-            If store_state is True, returns None (modifies instance in place).
+            If store_state is True, returns the current Prompt instance with the updated tool response.
         """
         # Create a copy of tools list or initialize new one
         new_output_tools = self.output_tools.copy() if self.output_tools else []
@@ -433,8 +432,15 @@ class Prompt(BaseModel):
 
         if store_state:
             self.output_tools = new_output_tools
+            return self
 
-        return self
+        return Prompt(
+            attributes=self.attributes,
+            system=self.system,
+            user=self.user,
+            input_tools=self.input_tools,
+            output_tools=new_output_tools,
+        )
 
     def __str__(self) -> str:
         """

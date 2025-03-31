@@ -1,4 +1,5 @@
 from .attributes import PromptAttributes
-from .prompt_parser import Prompt
+from .prompt import Prompt
+from .tool import InputPromptTool, OutputPromptTool
 
-__all__ = ["Prompt", "PromptAttributes"]
+__all__ = ["Prompt", "PromptAttributes", "InputPromptTool", "OutputPromptTool"]

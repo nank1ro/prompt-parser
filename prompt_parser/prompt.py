@@ -24,7 +24,8 @@ class Prompt(BaseModel):
         system: The system prompt message (optional).
         user: The user prompt message (optional).
         assistant: The assistant prompt message (optional).
-        tools: A list of `PromptTool` representing tools available to the model (optional).
+        input_tools: A list of `InputPromptTool` representing tool calls made by the model (optional).
+        output_tools: A list of `OutputPromptTool` representing tool responses (optional).
     """
 
     attributes: PromptAttributes
@@ -279,7 +280,7 @@ class Prompt(BaseModel):
         )
         # Strip whitespace and set to empty string if nothing remains
         assistant = assistant_cleaned.strip()
-        return "" if not assistant else assistant
+        return assistant if assistant else ""
 
     @staticmethod
     def __parse_output_tools(s: str) -> List[OutputPromptTool]:
@@ -395,7 +396,6 @@ class Prompt(BaseModel):
         Args:
             tool_id: The unique identifier of the tool call
             response: The response content to store
-            name: The name of the tool
             store_state: Whether to store the updated tool response in the instance.
                         Defaults to True.
 

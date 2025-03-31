@@ -437,6 +437,7 @@ class Prompt(BaseModel):
         return Prompt(
             attributes=self.attributes,
             system=self.system,
+            assistant=self.assistant,
             user=self.user,
             input_tools=self.input_tools,
             output_tools=new_output_tools,

@@ -109,8 +109,8 @@ The file should have the same format as the prompt string described above.
 ```py
 from prompt_parser import Prompt
 
-# Assuming you have a file named 'task.prompt' in the same directory
-prompt_from_file = Prompt.parse_from_file("task.prompt")
+# Assuming you have a file named 'task.md' in the same directory
+prompt_from_file = Prompt.parse_from_file("task.md")
 
 print(prompt_from_file)
 ```
@@ -189,7 +189,7 @@ prompt_string_output = str(prompt)
 print(prompt_string_output)
 
 # Save the prompt to a file:
-with open("formatted_prompt.prompt", "w") as f:
+with open("formatted_prompt.md", "w") as f:
     f.write(str(prompt))
 ```
 

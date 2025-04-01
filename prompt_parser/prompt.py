@@ -8,7 +8,9 @@ from prompt_parser.attributes import PromptAttributes
 from prompt_parser.tool import InputPromptTool, OutputPromptTool
 from prompt_parser.utils import partial_format
 
-tool_regex = r'<tool\s+name="([^"]+)"\s+id="([^"]+)">(.*?)</tool>'
+tool_regex = re.compile(
+    r'<tool\s+name="([^"]+)"\s+id="([^"]+)">(.*?)</tool>', re.DOTALL
+)
 
 
 class Prompt(BaseModel):
@@ -272,11 +274,9 @@ class Prompt(BaseModel):
             return None
         # If assistant content exists, remove tool tags and clean up
         # Remove all <tool> tags and their content
-        assistant_cleaned = re.sub(
-            tool_regex,
-            "",
-            assistant_raw,
-            flags=re.DOTALL,
+        assistant_cleaned = tool_regex.sub(
+            repl="",
+            string=assistant_raw,
         )
         # Strip whitespace and set to empty string if nothing remains
         assistant = assistant_cleaned.strip()
@@ -287,7 +287,7 @@ class Prompt(BaseModel):
         """
         Parse main-level tool responses into PromptToolOutput objects
         """
-        tools = []
+        tools: List[OutputPromptTool] = []
         # First, mask out the assistant content to avoid parsing tools within it
         assistant_pattern = r"<assistant>.*?</assistant>"
         masked_string = re.sub(
@@ -295,7 +295,7 @@ class Prompt(BaseModel):
         )
 
         # Now parse tools from the masked string
-        matches = re.finditer(tool_regex, masked_string, re.DOTALL)
+        matches = tool_regex.finditer(string=masked_string)
 
         for match in matches:
             name, tool_id, content = match.groups()
@@ -307,25 +307,24 @@ class Prompt(BaseModel):
                 tools.append(
                     OutputPromptTool(id=tool_id, name=name, content=effective_content)
                 )
-        return tools if tools else []
+        return tools
 
     @staticmethod
     def __parse_input_tools(s: str) -> List[InputPromptTool]:
         """
         Parse tool calls within assistant content into InputPromptTool objects
         """
-        tools = []
+        tools: List[InputPromptTool] = []
         assistant_match = re.search(r"<assistant>(.*?)</assistant>", s, re.DOTALL)
         if assistant_match:
             assistant_content = assistant_match.group(1)
-            matches = re.finditer(tool_regex, assistant_content, re.DOTALL)
+            matches = tool_regex.finditer(string=assistant_content)
 
             for match in matches:
                 name, tool_id, content = match.groups()
-                if len(content.strip()) == 0:
-                    effective_content = None
-                else:
-                    effective_content = content.strip()
+                effective_content = (
+                    None if len(content.strip()) == 0 else content.strip()
+                )
 
                 tools.append(
                     InputPromptTool(
@@ -334,7 +333,7 @@ class Prompt(BaseModel):
                         content=effective_content,
                     )
                 )
-        return tools if tools else []
+        return tools
 
     @property
     def system_forced(self) -> str:
@@ -403,6 +402,10 @@ class Prompt(BaseModel):
             If store_state is False, returns a new Prompt instance with the updated tool response.
             If store_state is True, returns the current Prompt instance with the updated tool response.
         """
+        # Validate response
+        if not isinstance(response, str):
+            raise TypeError("response must be a string")
+
         # Create a copy of tools list or initialize new one
         new_output_tools = self.output_tools.copy() if self.output_tools else []
 

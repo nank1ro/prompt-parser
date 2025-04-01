@@ -169,7 +169,7 @@ You can format the system, user, assistant, and tools messages by providing keyw
   By default, the format_*() methods use partial_format, which means that if a variable in your prompt template is not provided in the formatting arguments, it will be left as is in the output string, instead of raising an error. You can disable partial formatting by setting format_partial=False.
 - __Storing Formatted State__:
   If you want to update the Prompt object with the formatted message (e.g., to save the formatted prompt), you can set store_state=True in the format_*() methods. This will modify the prompt.system, prompt.user, prompt.assistant, or prompt.attributes.tools attributes in place.
-- __Storing Tool Responses__:
+- __Storing Tool Response__:
   You can store a tool response for a given tool call using the `store_tool_response()` method:
   ```py
   prompt.store_tool_response(

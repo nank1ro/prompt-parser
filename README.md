@@ -8,6 +8,7 @@
 **A Python library for parsing, formatting, and managing prompts for Large Language Models (LLMs).**
 
 `prompt-parser` simplifies the process of working with LLM prompts by providing a structured way to define, load, and manipulate prompts. It's designed to handle prompts with attributes (like temperature, model, etc.) and different message roles (system, user, assistant).
+It is inspired by the [Prompt file format](https://humanloop.com/docs/v5/reference/prompt-file-format) of Humanloop.
 
 ## Key Features
 

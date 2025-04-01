@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- **FEAT**: Add support to `InputPromptTool` and `OutputPromptTool` to handle tool inputs and outputs.
+
 ## 0.3.3
 
 - **REFACTOR**: Refactor the code.

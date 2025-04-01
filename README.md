@@ -8,6 +8,7 @@
 **A Python library for parsing, formatting, and managing prompts for Large Language Models (LLMs).**
 
 `prompt-parser` simplifies the process of working with LLM prompts by providing a structured way to define, load, and manipulate prompts. It's designed to handle prompts with attributes (like temperature, model, etc.) and different message roles (system, user, assistant).
+It is inspired by the [Prompt file format](https://humanloop.com/docs/v5/reference/prompt-file-format) of Humanloop.
 
 ## Key Features
 
@@ -17,6 +18,8 @@
 *   **Safe Attribute Access:**  Provides a `.get()` method to access attributes with default values and `.attribute_forced` properties to ensure required attributes are present.
 *   **Prompt Formatting:**  Format prompt messages (system, user, assistant, tools) using variables, with support for partial formatting (handling missing variables gracefully).
 *   **Serialization:** Convert `Prompt` objects back into formatted strings for saving or further use.
+*   **Tool Support:** Handle input tools (tool calls within assistant content) and output tools (tool responses) with the `PromptTool` class.
+*   **Tool Management:** Parse, format, and store tool responses dynamically using `input_tools` and `output_tools`.
 
 ## Installation
 
@@ -85,7 +88,12 @@ Hello, I have a question: {query}
 </user>
 
 <assistant>
-Okay, I'm ready to help!
+  <tool name="get_weather" id="call_1ZUCTfyeDnpqiZbIwpF6fLGt">
+  {
+    "location": "New York",
+    "unit": "C"
+  }
+  </tool>
 </assistant>
 """
 
@@ -102,8 +110,8 @@ The file should have the same format as the prompt string described above.
 ```py
 from prompt_parser import Prompt
 
-# Assuming you have a file named 'task.prompt' in the same directory
-prompt_from_file = Prompt.parse_from_file("task.prompt")
+# Assuming you have a file named 'task.md' in the same directory
+prompt_from_file = Prompt.parse_from_file("task.md")
 
 print(prompt_from_file)
 ```
@@ -135,6 +143,12 @@ Once you have parsed a Prompt object, you can access its components:
   top_k = prompt.attributes.get('top_k', 50)             # Returns top_k value or 50 if not defined
   unknown_attribute = prompt.attributes.get('unknown', "default_value") # Returns "default_value" if 'unknown' is not defined
   ```
+- __Prompt Tools__:
+  ```py
+  prompt.input_tools # Returns a list of InputPromptTool objects representing tool calls within the assistant message
+  prompt.output_tools # Returns a list of OutputPromptTool objects representing tool responses outside the assistant message
+  ```
+  Each `PromptTool` object has `id`, `name`, and `content` attributes:
 
 ### Formatting Prompt Messages
 
@@ -156,6 +170,17 @@ You can format the system, user, assistant, and tools messages by providing keyw
   By default, the format_*() methods use partial_format, which means that if a variable in your prompt template is not provided in the formatting arguments, it will be left as is in the output string, instead of raising an error. You can disable partial formatting by setting format_partial=False.
 - __Storing Formatted State__:
   If you want to update the Prompt object with the formatted message (e.g., to save the formatted prompt), you can set store_state=True in the format_*() methods. This will modify the prompt.system, prompt.user, prompt.assistant, or prompt.attributes.tools attributes in place.
+- __Storing Tool Response__:
+  You can store a tool response for a given tool call using the `store_tool_response()` method:
+  ```py
+  prompt.store_tool_response(
+      tool_id="call_1ZUCTfyeDnpqiZbIwpF6fLGt",
+      response="Temperature in New York is 15°C"
+  )
+  print(prompt.output_tools[0].content) # Output: Temperature in New York is 15°C
+  ```
+  If `store_state is True` (the default), the response is stored in the current `Prompt` object.
+  The method matches the `tool_id` with an existing tool in `input_tools` or `output_tools` and updates or creates an `OutputPromptTool` accordingly.
 
 ### Converting Prompt to String
 
@@ -165,7 +190,7 @@ prompt_string_output = str(prompt)
 print(prompt_string_output)
 
 # Save the prompt to a file:
-with open("formatted_prompt.prompt", "w") as f:
+with open("formatted_prompt.md", "w") as f:
     f.write(str(prompt))
 ```
 
